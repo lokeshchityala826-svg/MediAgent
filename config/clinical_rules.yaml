@@ -1,0 +1,125 @@
+# Clinical Decision Support Configuration - Deterministic Rules
+# Standards Reference:
+# - Royal College of Physicians (RCP) National Early Warning Score 2 (NEWS2)
+# - Sepsis-3 Consensus Definitions (qSOFA)
+# - KDIGO Clinical Practice Guideline for Acute Kidney Injury (AKI)
+
+news2:
+  name: "National Early Warning Score 2"
+  authority: "Royal College of Physicians (London, 2017)"
+  thresholds:
+    respiration_rate:
+      scores:
+        - { min: 0, max: 8, score: 3 }
+        - { min: 9, max: 11, score: 1 }
+        - { min: 12, max: 20, score: 0 }
+        - { min: 21, max: 24, score: 2 }
+        - { min: 25, max: 999, score: 3 }
+    spo2_scale_1: # Standard patients without hypercapnic respiratory failure
+      scores:
+        - { min: 0, max: 91, score: 3 }
+        - { min: 92, max: 93, score: 2 }
+        - { min: 94, max: 95, score: 1 }
+        - { min: 96, max: 100, score: 0 }
+    spo2_scale_2: # Patients with confirmed hypercapnic respiratory failure (e.g. severe COPD)
+      scores:
+        - { min: 0, max: 83, score: 3 }
+        - { min: 84, max: 85, score: 2 }
+        - { min: 86, max: 87, score: 1 }
+        - { min: 88, max: 92, score: 0 }
+        - { min: 93, max: 94, score: 1 }
+        - { min: 95, max: 96, score: 2 }
+        - { min: 97, max: 100, score: 3 }
+    air_or_oxygen:
+      air: 0
+      oxygen: 2
+    systolic_bp:
+      scores:
+        - { min: 0, max: 90, score: 3 }
+        - { min: 91, max: 100, score: 2 }
+        - { min: 101, max: 110, score: 1 }
+        - { min: 111, max: 219, score: 0 }
+        - { min: 220, max: 999, score: 3 }
+    pulse:
+      scores:
+        - { min: 0, max: 40, score: 3 }
+        - { min: 41, max: 50, score: 1 }
+        - { min: 51, max: 90, score: 0 }
+        - { min: 91, max: 110, score: 1 }
+        - { min: 111, max: 130, score: 2 }
+        - { min: 131, max: 999, score: 3 }
+    consciousness:
+      alert: 0
+      voice_pain_unresponsive: 3
+    temperature:
+      scores:
+        - { min: 0.0, max: 35.0, score: 3 }
+        - { min: 35.1, max: 36.0, score: 1 }
+        - { min: 36.1, max: 38.0, score: 0 }
+        - { min: 38.1, max: 39.0, score: 1 }
+        - { min: 39.1, max: 99.0, score: 2 }
+  clinical_risk_bands:
+    low:
+      score_range: [0, 4]
+      color: "green"
+      monitoring_frequency: "12-hourly"
+      clinical_response: "Ward-based routine observation."
+    low_medium_single_trigger:
+      score_criteria: "Score of 3 in any single physiological parameter"
+      color: "yellow"
+      monitoring_frequency: "4-6 hourly"
+      clinical_response: "Urgent registered nurse review; decide whether to escalate."
+    medium:
+      score_range: [5, 6]
+      color: "amber"
+      monitoring_frequency: "Hourly"
+      clinical_response: "Urgent clinical review by ward doctor or acute team."
+    high:
+      score_range: [7, 20]
+      color: "red"
+      monitoring_frequency: "Continuous"
+      clinical_response: "Emergency bedside assessment by critical care/MET team."
+
+qsofa:
+  name: "quick Sepsis-related Organ Failure Assessment"
+  authority: "Singer M, et al. Sepsis-3 Consensus Guidelines (JAMA 2016)"
+  criteria:
+    respiratory_rate_threshold: 22 # breaths/min (>= 22 gives 1 point)
+    altered_mentation: true        # GCS < 15 or AVPU != Alert gives 1 point
+    systolic_bp_threshold: 100     # mmHg (<= 100 gives 1 point)
+  interpretation:
+    score_threshold: 2
+    meaning: "High risk of poor clinical outcome in suspected infection (ICU transfer / mortality)."
+
+critical_laboratory_thresholds:
+  lactate:
+    unit: "mmol/L"
+    normal_max: 2.0
+    abnormal_high: 2.1
+    panic_high: 4.0
+    guideline: "Surviving Sepsis Campaign 2021: Serum lactate > 2 mmol/L warrants resuscitation; > 4 mmol/L indicates septic shock."
+  potassium:
+    unit: "mEq/L"
+    normal_min: 3.5
+    normal_max: 5.0
+    panic_low: 2.8
+    panic_high: 6.0
+    guideline: "AHA/ESC: Severe dysrhythmia risk at K+ > 6.0 mEq/L or < 2.8 mEq/L."
+  white_blood_cells:
+    unit: "x10^3/uL"
+    normal_min: 4.5
+    normal_max: 11.0
+    panic_low: 1.5
+    panic_high: 25.0
+    guideline: "SIRS Criteria: Leukocytosis > 12.0 or Leukopenia < 4.0 x10^3/uL."
+  platelets:
+    unit: "x10^3/uL"
+    normal_min: 150
+    normal_max: 450
+    panic_low: 50
+    guideline: "SOFA Coagulation Score: Platelets < 100 indicates organ dysfunction; < 50 severe bleeding risk."
+  creatinine:
+    unit: "mg/dL"
+    normal_max: 1.2
+    delta_threshold_48h: 0.3
+    guideline: "KDIGO AKI Stage 1: Absolute increase >= 0.3 mg/dL within 48h or 1.5-1.9x baseline."

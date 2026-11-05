@@ -1,0 +1,122 @@
+# Simulation Scenarios Configuration
+# Synthetic clinical patient trajectories
+
+scenarios:
+  - id: "SCN-STABLE-01"
+    name: "Stable Ward Post-Operative Patient"
+    patient_id: "PAT-001"
+    patient_name: "James Cole"
+    age: 58
+    gender: "MALE"
+    code_status: "FULL_CODE"
+    room_bed: "Ward 4B - Bed 12"
+    admission_reason: "Post-operative day 1 following elective inguinal hernia repair"
+    baseline:
+      heart_rate: 72.0
+      systolic_bp: 124.0
+      diastolic_bp: 78.0
+      respiratory_rate: 15.0
+      spo2: 98.0
+      temperature_c: 36.8
+      is_copd_spo2_scale2: false
+    comorbidities:
+      - code: "I10"
+        description: "Essential primary hypertension (controlled)"
+        severity: "MILD"
+    medications:
+      - name: "Amlodipine"
+        dosage: "5 mg"
+        route: "Oral"
+        frequency: "Once daily"
+      - name: "Acetaminophen"
+        dosage: "1000 mg"
+        route: "Oral"
+        frequency: "Every 6 hours PRN"
+    simulation_duration_hours: 24
+    expected_outcome: "Remains hemodynamically stable. NEWS2 score fluctuates between 0 and 1. Routine ward observations."
+
+  - id: "SCN-SEPSIS-02"
+    name: "Sepsis-Like Acute Deterioration"
+    patient_id: "PAT-002"
+    patient_name: "Elena Rostova"
+    age: 67
+    gender: "FEMALE"
+    code_status: "FULL_CODE"
+    room_bed: "Step-Down Unit - Bed 04"
+    admission_reason: "Post-operative day 2 following sigmoid colectomy for diverticulitis"
+    baseline:
+      heart_rate: 80.0
+      systolic_bp: 122.0
+      diastolic_bp: 76.0
+      respiratory_rate: 16.0
+      spo2: 97.0
+      temperature_c: 37.1
+      is_copd_spo2_scale2: false
+    comorbidities:
+      - code: "E11.9"
+        description: "Type 2 Diabetes Mellitus"
+        severity: "MODERATE"
+      - code: "K57.92"
+        description: "Diverticulitis of large intestine"
+        severity: "SEVERE"
+    medications:
+      - name: "Metformin"
+        dosage: "500 mg"
+        route: "Oral"
+        frequency: "Twice daily (held)"
+      - name: "Cefepime"
+        dosage: "2 g"
+        route: "IV"
+        frequency: "Every 8 hours"
+      - name: "Metronidazole"
+        dosage: "500 mg"
+        route: "IV"
+        frequency: "Every 8 hours"
+    simulation_duration_hours: 24
+    progression:
+      hours_0_to_6: "Mild tachycardia (HR 85-92), low-grade fever (37.8°C), normal BP (118/74)."
+      hours_7_to_14: "Deterioration: HR rises to 112 bpm, RR jumps to 24/min, Temp spikes to 38.9°C, SBP softens to 102 mmHg. NEWS2 reaches 5-6."
+      hours_15_to_24: "Full Sepsis/Septic shock progression: SBP crashes to 84 mmHg, HR 128 bpm, RR 27/min, hypothermia late (35.6°C), serum lactate spikes to 4.2 mmol/L, WBC spikes to 18.5k. NEWS2 exceeds 9. qSOFA score = 2."
+
+  - id: "SCN-RESP-03"
+    name: "Acute Respiratory Deterioration"
+    patient_id: "PAT-003"
+    patient_name: "Arthur Pendelton"
+    age: 73
+    gender: "MALE"
+    code_status: "DNR_DNI"
+    room_bed: "Pulmonary Ward - Bed 07"
+    admission_reason: "Acute exacerbation of chronic obstructive pulmonary disease (AECOPD) and right lower lobe pneumonia"
+    baseline:
+      heart_rate: 84.0
+      systolic_bp: 130.0
+      diastolic_bp: 82.0
+      respiratory_rate: 20.0
+      spo2: 91.0
+      temperature_c: 37.3
+      is_copd_spo2_scale2: true
+    comorbidities:
+      - code: "J44.1"
+        description: "COPD with acute exacerbation (GOLD Stage 3)"
+        severity: "SEVERE"
+      - code: "I25.10"
+        description: "Atherosclerotic heart disease"
+        severity: "MODERATE"
+    medications:
+      - name: "Tiotropium"
+        dosage: "18 mcg"
+        route: "Inhalation"
+        frequency: "Once daily"
+      - name: "Prednisone"
+        dosage: "40 mg"
+        route: "Oral"
+        frequency: "Daily"
+      - name: "Albuterol-Ipratropium Nebulizer"
+        dosage: "3 mL"
+        route: "Inhalation"
+        frequency: "Every 4 hours"
+    simulation_duration_hours: 24
+    progression:
+      hours_0_to_6: "Stable on baseline 2L Nasal Cannula, SpO2 89-91% (Scale 2 target 88-92%), RR 20/min."
+      hours_7_to_16: "Hypoxic decompensation: SpO2 drops to 84%, RR increases to 28/min, increased work of breathing, accessory muscle use. Scaled to 4L cannula, then Venturi mask."
+      hours_17_to_24: "Severe hypercapnic respiratory failure: RR 32/min then blunted to 14/min with somnolence (AVPU: Voice), SpO2 81% despite oxygen therapy, ABG showing severe respiratory acidosis (pH 7.22, pCO2 68 mmHg). NEWS2 exceeds 10."
